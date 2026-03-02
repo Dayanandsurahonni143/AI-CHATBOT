@@ -27,18 +27,18 @@ app.post("/chat", async (req, res) => {
 
   try {
     const response = await fetch(
-      "https://router.huggingface.co/hf-inference/models/mistralai/Mistral-7B-Instruct-v0.2",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.HF_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          inputs: userMessage,
-        }),
-      }
-    );
+      "https://router.huggingface.co/hf-inference/models/google/flan-t5-large",
+     {
+       method: "POST",
+       headers: {
+        Authorization: `Bearer ${process.env.HF_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        inputs: userMessage,
+      }),
+    }
+   ;
 
     const data = await response.json();
 
