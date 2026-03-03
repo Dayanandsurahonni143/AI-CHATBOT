@@ -26,40 +26,33 @@ app.post("/chat", async (req, res) => {
   }
 
   try {
-    const response = await fetch(
-      "https://api-inference.huggingface.co/models/google/flan-t5-large",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.HF_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          inputs: userMessage
-        })
-      }
-    );
+    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: "openchat/openchat-7b",
+        messages: [
+          { role: "user", content: userMessage }
+        ]
+      })
+    });
 
-    const text = await response.text();
+    const data = await response.json();
 
-    let data;
-    try {
-      data = JSON.parse(text);
-    } catch (e) {
-      return res.json({ reply: text });
+    if (!response.ok) {
+      return res.json({ reply: JSON.stringify(data) });
     }
 
-    if (Array.isArray(data)) {
-      return res.json({
-        reply: data[0]?.generated_text || "No response"
-      });
-    }
-
-    return res.json({ reply: JSON.stringify(data) });
+    res.json({
+      reply: data.choices[0].message.content
+    });
 
   } catch (error) {
-    console.error("ERROR:", error);
-    return res.status(500).json({ reply: "API request failed." });
+    console.error(error);
+    res.status(500).json({ reply: "API request failed." });
   }
 });
 
