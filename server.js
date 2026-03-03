@@ -42,20 +42,20 @@ app.post("/chat", async (req, res) => {
 
     const text = await response.text();
 
+    let data;
     try {
-      const data = JSON.parse(text);
-
-      if (Array.isArray(data)) {
-        return res.json({
-          reply: data[0]?.generated_text || "No response",
-        });
-      }
-
-      return res.json({ reply: JSON.stringify(data) });
-
+      data = JSON.parse(text);
     } catch {
       return res.json({ reply: text });
     }
+
+    if (Array.isArray(data)) {
+      return res.json({
+        reply: data[0]?.generated_text || "No response",
+      });
+    }
+
+    return res.json({ reply: JSON.stringify(data) });
 
   } catch (error) {
     console.error("ERROR:", error);
