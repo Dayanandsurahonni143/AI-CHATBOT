@@ -1,4 +1,3 @@
-// server.js
 import express from "express";
 import dotenv from "dotenv";
 import fetch from "node-fetch";
@@ -26,19 +25,23 @@ app.post("/chat", async (req, res) => {
   }
 
   try {
-    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        model: "openchat/openchat-7b",
-        messages: [
-          { role: "user", content: userMessage }
-        ]
-      })
-    });
+    const response = await fetch(
+      "https://api.openai.com/v1/chat/completions",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.OPENAI_API_KEY}`
+        },
+        body: JSON.stringify({
+          model: "gpt-4o-mini",
+          messages: [
+            { role: "system", content: "You are a helpful AI assistant." },
+            { role: "user", content: userMessage }
+          ]
+        })
+      }
+    );
 
     const data = await response.json();
 
@@ -52,7 +55,7 @@ app.post("/chat", async (req, res) => {
 
   } catch (error) {
     console.error(error);
-    res.status(500).json({ reply: "API request failed." });
+    res.status(500).json({ reply: "OpenAI request failed." });
   }
 });
 
